@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Hybrid Text Compression System{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1>Hybrid Text Compression System</h1>
+            <p class="hero-subtitle">Advanced lossless compression using Huffman Coding & LZW Algorithm</p>
+            <div class="hero-features">
+                <div class="feature">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Superior compression ratios</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-lightning-bolt"></i>
+                    <span>Fast processing</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Lossless compression</span>
+                </div>
+            </div>
+            <div class="hero-buttons">
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="compression-demo">
+                <div class="demo-box original">
+                    <h3>Original Text</h3>
+                    <div class="demo-content">
+                        <div class="text-block">Lorem ipsum dolor sit amet...</div>
+                        <div class="size-indicator">1.2 MB</div>
+                    </div>
+                </div>
+                <div class="demo-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>Hybrid Compression</span>
+                </div>
+                <div class="demo-box compressed">
+                    <h3>Compressed</h3>
+                    <div class="demo-content">
+                        <div class="text-block compressed-text">01101001...</div>
+                        <div class="size-indicator">456 KB</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="about" class="about-section">
+    <div class="container">
+        <h2>About Our Hybrid Compression System</h2>
+        <div class="about-grid">
+            <div class="about-card">
+                <div class="card-icon">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <h3>Hybrid Algorithm</h3>
+                <p>Combines the power of Huffman Coding and LZW compression to achieve optimal results for text data.</p>
+            </div>
+            <div class="about-card">
+                <div class="card-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3>Lossless Compression</h3>
+                <p>Guarantees perfect data recovery without any information loss, ideal for important documents.</p>
+            </div>
+            <div class="about-card">
+                <div class="card-icon">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+                <h3>Web-Based Platform</h3>
+                <p>Access from anywhere with our intuitive web interface. No software installation required.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="algorithm-section">
+    <div class="container">
+        <h2>How It Works</h2>
+        <div class="algorithm-flow">
+            <div class="flow-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>LZW Compression</h3>
+                    <p>First, we apply the Lempel-Ziv-Welch algorithm to identify and replace repeating patterns with dictionary codes.</p>
+                </div>
+            </div>
+            <div class="flow-arrow">
+                <i class="fas fa-arrow-down"></i>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Huffman Encoding</h3>
+                    <p>Then, we apply Huffman coding to assign shorter binary codes to more frequent symbols for optimal compression.</p>
+                </div>
+            </div>
+            <div class="flow-arrow">
+                <i class="fas fa-arrow-down"></i>
+            </div>
+            <div class="flow-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Optimized Output</h3>
+                    <p>The result is a highly compressed file that maintains all original data while significantly reducing file size.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features-section">
+    <div class="container">
+        <h2>Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <i class="fas fa-upload"></i>
+                <h4>Easy Upload</h4>
+                <p>Drag and drop or browse to upload your text files</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-history"></i>
+                <h4>Compression History</h4>
+                <p>Track all your compressions with detailed statistics</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-download"></i>
+                <h4>Instant Download</h4>
+                <p>Download compressed files immediately after processing</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-chart-bar"></i>
+                <h4>Performance Metrics</h4>
+                <p>View compression ratios, processing times, and file sizes</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-lock"></i>
+                <h4>Secure Processing</h4>
+                <p>Your files are processed securely and privately</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-mobile-alt"></i>
+                <h4>Mobile Friendly</h4>
+                <p>Works perfectly on all devices and screen sizes</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Start Compressing?</h2>
+            <p>Join thousands of users who trust our hybrid compression system</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Create Account</a>
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">Sign In</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

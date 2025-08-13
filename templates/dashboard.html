@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Hybrid Text Compression System{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1>Welcome back, {{ username }}!</h1>
+            <p>Compress your text files using our advanced hybrid algorithm</p>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <div class="upload-card">
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Upload Text File</h3>
+                    <p>Drag and drop your .txt file here or click to browse</p>
+                    <input type="file" id="file-input" accept=".txt" hidden>
+                    <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                        <i class="fas fa-file-upload"></i>
+                        Select File
+                    </button>
+                </div>
+                
+                <div class="file-info" id="file-info" style="display: none;">
+                    <div class="file-details">
+                        <i class="fas fa-file-alt"></i>
+                        <div class="file-text">
+                            <div class="file-name" id="file-name"></div>
+                            <div class="file-size" id="file-size"></div>
+                        </div>
+                        <button class="btn-remove" onclick="removeFile()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button class="btn btn-success compress-btn" onclick="compressFile()">
+                        <i class="fas fa-compress-arrows-alt"></i>
+                        Compress File
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="results-section" style="display: none;">
+            <div class="results-card">
+                <div class="results-header">
+                    <h3><i class="fas fa-chart-bar"></i> Compression Results</h3>
+                </div>
+                <div class="results-grid">
+                    <div class="result-item">
+                        <div class="result-icon">
+                            <i class="fas fa-file"></i>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-label">Original Size</div>
+                            <div class="result-value" id="original-size">-</div>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-icon">
+                            <i class="fas fa-file-archive"></i>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-label">Compressed Size</div>
+                            <div class="result-value" id="compressed-size">-</div>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-label">Compression Ratio</div>
+                            <div class="result-value" id="compression-ratio">-</div>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-label">Processing Time</div>
+                            <div class="result-value" id="processing-time">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="results-actions">
+                    <button class="btn btn-primary" id="download-btn" onclick="downloadFile()">
+                        <i class="fas fa-download"></i>
+                        Download Compressed File
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">
+                        <i class="fas fa-plus"></i>
+                        Compress Another File
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+            <div class="history-card">
+                <div class="history-header">
+                    <h3><i class="fas fa-history"></i> Compression History</h3>
+                    <button class="btn btn-outline" onclick="loadHistory()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div class="history-content" id="history-content">
+                    <div class="history-empty">
+                        <i class="fas fa-inbox"></i>
+                        <p>No compression history yet. Upload a file to get started!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentFileId = null;
+
+// File upload handling
+const uploadArea = document.getElementById('upload-area');
+const fileInput = document.getElementById('file-input');
+const fileInfo = document.getElementById('file-info');
+
+// Drag and drop functionality
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('drag-over');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('drag-over');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('drag-over');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFileSelect(files[0]);
+    }
+});
+
+uploadArea.addEventListener('click', () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+    }
+});
+
+function handleFileSelect(file) {
+    if (!file.name.toLowerCase().endsWith('.txt')) {
+        showToast('Please select a .txt file', 'error');
+        return;
+    }
+    
+    if (file.size > 16 * 1024 * 1024) { // 16MB limit
+        showToast('File size must be less than 16MB', 'error');
+        return;
+    }
+    
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('file-size').textContent = formatFileSize(file.size);
+    
+    uploadArea.style.display = 'none';
+    fileInfo.style.display = 'block';
+}
+
+function removeFile() {
+    fileInput.value = '';
+    uploadArea.style.display = 'block';
+    fileInfo.style.display = 'none';
+    document.getElementById('results-section').style.display = 'none';
+}
+
+function compressFile() {
+    const file = fileInput.files[0];
+    if (!file) {
+        showToast('Please select a file first', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    showLoading();
+    
+    fetch('/compress', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showCompressionResults(data.result);
+            currentFileId = data.result.file_id;
+            showToast('File compressed successfully!', 'success');
+        } else {
+            showToast(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        showToast('An error occurred during compression', 'error');
+        console.error('Error:', error);
+    })
+    .finally(() => {
+        hideLoading();
+    });
+}
+
+function showCompressionResults(result) {
+    document.getElementById('original-size').textContent = formatFileSize(result.original_size);
+    document.getElementById('compressed-size').textContent = formatFileSize(result.compressed_size);
+    document.getElementById('compression-ratio').textContent = result.compression_ratio + ':1';
+    document.getElementById('processing-time').textContent = result.compression_time + 's';
+    
+    document.getElementById('results-section').style.display = 'block';
+}
+
+function downloadFile() {
+    if (currentFileId) {
+        window.location.href = `/download/${currentFileId}`;
+    }
+}
+
+function resetUpload() {
+    removeFile();
+    currentFileId = null;
+}
+
+function loadHistory() {
+    fetch('/history')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayHistory(data.history);
+        } else {
+            showToast('Failed to load history', 'error');
+        }
+    })
+    .catch(error => {
+        showToast('Error loading history', 'error');
+        console.error('Error:', error);
+    });
+}
+
+function displayHistory(history) {
+    const historyContent = document.getElementById('history-content');
+    
+    if (history.length === 0) {
+        historyContent.innerHTML = `
+            <div class="history-empty">
+                <i class="fas fa-inbox"></i>
+                <p>No compression history yet. Upload a file to get started!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const historyHTML = history.map(item => `
+        <div class="history-item">
+            <div class="history-info">
+                <div class="history-filename">
+                    <i class="fas fa-file-alt"></i>
+                    ${item.filename}
+                </div>
+                <div class="history-details">
+                    <span class="history-date">${item.upload_date}</span>
+                    <span class="history-size">${formatFileSize(item.original_size)} → ${formatFileSize(item.compressed_size)}</span>
+                    <span class="history-ratio">${item.compression_ratio.toFixed(2)}:1</span>
+                    <span class="history-time">${item.compression_time.toFixed(3)}s</span>
+                </div>
+            </div>
+            <div class="history-actions">
+                <button class="btn-icon" onclick="downloadHistoryFile(${item.file_id})" title="Download">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    historyContent.innerHTML = historyHTML;
+}
+
+function downloadHistoryFile(fileId) {
+    window.location.href = `/download/${fileId}`;
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Load history on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadHistory();
+});
+</script>
+{% endblock %}
