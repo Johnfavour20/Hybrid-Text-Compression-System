@@ -67,14 +67,35 @@
 </div>
 
 <script>
+// Debug: Confirm script is loaded
+console.log('Login page script loaded');
+
 document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
+    console.log('Login form submitted'); // Debug log
+    
+    // Get form values
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    
+    // Basic validation
+    if (!email || !password) {
+        showToast('Please fill in all fields', 'error');
+        return;
+    }
+    
+    // Validate email format
+    if (!email.includes('@')) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+    }
     
     const formData = {
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value
+        email: email,
+        password: password
     };
     
+    console.log('Sending login request...'); // Debug log
     showLoading();
     
     try {
@@ -86,7 +107,16 @@ document.getElementById('login-form').addEventListener('submit', async function(
             body: JSON.stringify(formData)
         });
         
+        console.log('Response status:', response.status); // Debug log
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Server did not return JSON response');
+        }
+        
         const data = await response.json();
+        console.log('Response data:', data); // Debug log
         
         if (data.success) {
             showToast('Login successful! Redirecting...', 'success');
@@ -94,27 +124,14 @@ document.getElementById('login-form').addEventListener('submit', async function(
                 window.location.href = '/dashboard';
             }, 1000);
         } else {
-            showToast(data.message, 'error');
+            showToast(data.message || 'Login failed', 'error');
         }
     } catch (error) {
+        console.error('Login error:', error); // Debug log
         showToast('An error occurred. Please try again.', 'error');
     } finally {
         hideLoading();
     }
 });
-
-function togglePassword(fieldId) {
-    const field = document.getElementById(fieldId);
-    const toggle = field.nextElementSibling;
-    const icon = toggle.querySelector('i');
-    
-    if (field.type === 'password') {
-        field.type = 'text';
-        icon.className = 'fas fa-eye-slash';
-    } else {
-        field.type = 'password';
-        icon.className = 'fas fa-eye';
-    }
-}
 </script>
 {% endblock %}
